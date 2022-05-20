@@ -19,13 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.makza.lifeonmars.navigation.BottomNavItem
+import com.makza.lifeonmars.navigation.NavigationGraph
 import com.makza.lifeonmars.ui.theme.LifeOnMarsTheme
 import kotlinx.coroutines.launch
 
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    BottomNavigationWithSwipeScreen()
+                    MainScreenView()
                 }
             }
         }
@@ -50,17 +52,27 @@ fun showToast(context: Context, msg:String){
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun MainScreenView(){
+    val navController = rememberNavController()
+    Scaffold(
+        bottomBar = { com.makza.lifeonmars.navigation.BottomNavigation(navController = navController) }
+    ) {
+        NavigationGraph(navController = navController)
+    }
+}
+
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun BottomNavigationWithSwipeScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val images = listOf(
-        R.drawable.ic_launcher_foreground,
-        R.drawable.ic_launcher_foreground,
-        R.drawable.ic_launcher_foreground,
-        R.drawable.ic_launcher_foreground)
-    val pageState = rememberPagerState(pageCount = 4, initialPage = 0)
+        BottomNavItem.Login,
+        BottomNavItem.MyNetwork,
+        BottomNavItem.AddPost)
+    val pageState = rememberPagerState(pageCount = images.size, initialPage = 0)
     
     Scaffold(
         topBar = {
@@ -117,7 +129,7 @@ fun BottomNavigationWithSwipeScreen() {
             state = pageState
         ) { page ->
             Image(
-                painter = painterResource(id = images[page]),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Screen image",
                 modifier = Modifier
                     .fillMaxSize(),
